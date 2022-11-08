@@ -1,3 +1,6 @@
+import {PHOTOS} from './photo.js';
+import {getRandomRange} from './generator.js';
+
 const getObjectPhoto = function (indexPhoto) {
   return {
     id: indexPhoto + 1,
