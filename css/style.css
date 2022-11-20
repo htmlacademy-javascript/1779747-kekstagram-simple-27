@@ -18,7 +18,7 @@
   font-style: normal;
   font-display: swap;
 }
-
+img-upload__preview
 *,
 *::before,
 *::after {
@@ -514,6 +514,7 @@ main {
   height: 600px;
 
   background-color: #ffffff;
+  /*transform: scale(0.55);*/
 }
 
 .img-upload__preview img {

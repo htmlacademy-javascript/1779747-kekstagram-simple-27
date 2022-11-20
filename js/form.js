@@ -1,20 +1,19 @@
 import {clearListPictures, rendeListPictures} from './pictureTemplate.js';
-
-
+import {imgPreview, noneEffectData, replaceClass, changeSlider} from './imageEffect.js';
 
 const uploadFile = document.getElementById('upload-file');
 const showForm = document.querySelector('.img-upload__overlay');
 const canselButton = document.getElementById('upload-cancel');
 const uploadForm = document.querySelector('.img-upload__form');
 const publicButton = document.getElementById('upload-submit');
-const uploadImageForm = document.getElementById('upload-select-image');
 const textDescription = document.querySelector('.text__description');
+const scaleControlValue = document.querySelector('.scale__control--value');
 
 
 
+let size =1;
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
-
 const isEnterKey = (evt) => evt.key === 'Enter';
 
 const onPopupEscKeydown = (evt) => {
@@ -25,11 +24,16 @@ const onPopupEscKeydown = (evt) => {
 };
 
 const showFormAfterChange = () => {
-  textDescription.textContent = "";
- showForm.classList.remove('hidden');
- document.querySelector('body').classList.add('modal-open');
- document.addEventListener('keydown', onPopupEscKeydown);
-
+  textDescription.textContent = '';
+  showForm.classList.remove('hidden');
+  document.querySelector('body').classList.add('modal-open');
+  document.addEventListener('keydown', onPopupEscKeydown);
+  scaleControlValue.value = '100%';
+  imgPreview.style.transform = 'scale(1)';
+  size = 1;
+  replaceClass('effects__preview--none');
+  noneEffectData();
+  changeSlider();
 };
 
 const closingFormAfterChange = () => {
@@ -38,6 +42,7 @@ const closingFormAfterChange = () => {
   document.querySelector('body').classList.remove('modal-open');
   document.removeEventListener('keydown', onPopupEscKeydown);
  // uploadForm.reset();
+  //imgPreview.style.transform = 'scale(1)';
 };
 
 const pristine = new Pristine(uploadForm, {
@@ -67,11 +72,20 @@ const sendPublicPhoto = () => {
 
     } else
      return false;
-
-
 };
 
-
-export {textDescription, uploadImageForm, publicButton, uploadFile, canselButton, isEnterKey, isEscapeKey,
-  onPopupEscKeydown, showFormAfterChange, closingFormAfterChange, sendPublicPhoto };
+const changeOfSize = (scaleButton) => {
+  if(scaleButton && size > 0.25 ){
+    size = size - 0.25;
+    scaleControlValue.value = size * 100 + '%';
+    imgPreview.style.transform = `scale(${size})`;
+  }
+  if (!scaleButton && size < 1){
+    size = size + 0.25;
+    scaleControlValue.value = size * 100 + '%';
+    imgPreview.style.transform = `scale(${size})`;
+  }
+};
+export {scaleControlValue, publicButton, uploadFile, canselButton, isEnterKey, isEscapeKey,
+  onPopupEscKeydown, showFormAfterChange, closingFormAfterChange, sendPublicPhoto, changeOfSize };
 

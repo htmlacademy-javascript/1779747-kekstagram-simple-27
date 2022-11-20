@@ -1,8 +1,11 @@
-import {publicButton, uploadFile, canselButton, showFormAfterChange, closingFormAfterChange, isEnterKey, isEscapeKey, sendPublicPhoto} from "./form.js";
+import {publicButton, uploadFile, canselButton,
+  showFormAfterChange, closingFormAfterChange, isEnterKey, isEscapeKey, sendPublicPhoto,
+  } from './form.js';
 import {rendeListPictures, clearListPictures} from './pictureTemplate.js';
-import {similarPicturesList} from './pictureTemplate.js';
+
 
 rendeListPictures();
+
 
 uploadFile.addEventListener('change', () => {
   showFormAfterChange();
@@ -24,8 +27,6 @@ publicButton.addEventListener('click', (evt) => {
   if (!sendPublicPhoto()){
     evt.preventDefault();
   }
-
-
 });
 
 
