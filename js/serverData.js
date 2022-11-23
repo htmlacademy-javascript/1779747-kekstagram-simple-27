@@ -33,8 +33,7 @@ const getData = (onSuccess) => {
       }
     })
     .then((photo) => {
-       onSuccess(photo);
-        console.log(photo);
+      onSuccess(photo);
     })
     .catch(() => {
       showAlert ('Не удалось загрузить фото. Попробуйте ещё раз');

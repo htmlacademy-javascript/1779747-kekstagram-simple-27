@@ -15,12 +15,12 @@ const errorMessage = document.querySelector('#error').content.querySelector('.er
 const successButton = document.querySelector('#success').content.querySelector('.success__button');
 const errorButton = document.querySelector('#error').content.querySelector('.error__button');
 let templateMessage = undefined;
-let size = 1;
+let sizeWindow = 1;
 
 const resetForm = () => {
   scaleControlValue.value = '100%';
   imgPreview.style.transform = 'scale(1)';
-  size = 1;
+  sizeWindow = 1;
   replaceClass('effects__preview--none');
 };
 
@@ -66,15 +66,15 @@ const unblockSubmitButton = () => {
 };
 
 const changeOfSize = (scaleButton) => {
-  if(scaleButton && size > 0.25 ){
-    size = size - 0.25;
-    scaleControlValue.value = size * 100 + '%';
-    imgPreview.style.transform = `scale(${size})`;
+  if(scaleButton && sizeWindow > 0.25 ){
+    sizeWindow = sizeWindow - 0.25;
+    scaleControlValue.value = sizeWindow * 100 + '%';
+    imgPreview.style.transform = `scale(${sizeWindow})`;
   }
   if (!scaleButton && size < 1){
-    size = size + 0.25;
-    scaleControlValue.value = size * 100 + '%';
-    imgPreview.style.transform = `scale(${size})`;
+    sizeWindow = sizeWindow + 0.25;
+    scaleControlValue.value = sizeWindow * 100 + '%';
+    imgPreview.style.transform = `scale(${sizeWindow})`;
   }
 };
 
@@ -91,9 +91,7 @@ const clickOnMessage = (evt) => {
 };
 
 const clickButtonOnMessage = (evt) => {
-  if (evt.target.className = 'success__button' ) {
-    console.log('курсор на кнопке');
-    console.log(evt.target.className);
+  if (evt.target.className === 'success__button' ) {
     hideWindowMessage(evt.target.className);
   }
 };

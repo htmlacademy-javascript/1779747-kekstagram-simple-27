@@ -1,11 +1,11 @@
-import {changeOfSize} from "./form.js";
+import {changeOfSize} from './form.js';
 
 const imgPreview = document.querySelector('.img-upload__preview');
 const spanbutton = document.querySelector('.effects__list');
-const sliderElement  = document.querySelector('.effect-level__slider');
+const sliderElement = document.querySelector('.effect-level__slider');
 
 // уменяю класс при клике на кнопку эффекта
-const replaceClass =  (newClass) => {
+const replaceClass = (newClass) => {
   imgPreview.classList.remove(imgPreview.classList[1]);
   imgPreview.classList.add(newClass);
 };
@@ -90,8 +90,8 @@ const changeSlider = () => {
     document.querySelector('.img-upload__effect-level').classList.add('hidden');
   } else {
     document.querySelector('.img-upload__effect-level').classList.remove('hidden');
-  };
-
+  }
+};
   sliderElement.noUiSlider.updateOptions({
     range: {
       min: effectData.min,
@@ -112,7 +112,7 @@ document.querySelector('.img-upload__scale').addEventListener('click', (evt) => 
 //обработчик события кнопки эффекта
 spanbutton.addEventListener('click', (evt) => {
 // добавляю класс эффекта фотографии из пред. просмотра
-  if(evt.target.value!==undefined) {
+  if(evt.target.value !== undefined) {
     effectData = EFFECTS.find(effect => effect.name === evt.target.value);
     replaceClass(`effects__preview--${evt.target.value}`);
     changeSlider();

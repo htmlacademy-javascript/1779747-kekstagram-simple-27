@@ -2,8 +2,6 @@ const pictureTemplateSample = document.querySelector('#picture').content.querySe
 const similarPictureFragment = document.createDocumentFragment();
 const similarPicturesList = document.querySelector('.pictures');
 
-
-
 const rendeListPictures = (photos) => {
     photos.forEach(({comments, id, likes, url})=> {
     const wizardPicture = pictureTemplateSample.cloneNode(true);
@@ -15,7 +13,5 @@ const rendeListPictures = (photos) => {
   });
   similarPicturesList.appendChild(similarPictureFragment);
 };
-
-
 
 export {similarPicturesList, rendeListPictures};

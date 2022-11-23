@@ -24,4 +24,4 @@ const showAlert = (message) => {
   }, 5000);
 };
 
-export {showAlert, isEscapeKey, isEnterKey}
+export {showAlert, isEscapeKey, isEnterKey};
