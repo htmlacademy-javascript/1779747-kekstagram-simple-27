@@ -100,7 +100,7 @@ const changeSlider = () => {
     step: effectData.step,
     start: effectData.max,
   });
-};
+
 
 
 //обработчик события кнопки уменьшения размера
@@ -112,7 +112,7 @@ document.querySelector('.img-upload__scale').addEventListener('click', (evt) => 
 //обработчик события кнопки эффекта
 spanbutton.addEventListener('click', (evt) => {
 // добавляю класс эффекта фотографии из пред. просмотра
-  if(evt.target.value !== undefined) {
+  if (evt.target.value !== undefined) {
     effectData = EFFECTS.find(effect => effect.name === evt.target.value);
     replaceClass(`effects__preview--${evt.target.value}`);
     changeSlider();

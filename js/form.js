@@ -24,13 +24,6 @@ const resetForm = () => {
   replaceClass('effects__preview--none');
 };
 
-const onPopupEscKeydown = (evt) => {
-  if (isEscapeKey(evt)) {
-    evt.preventDefault();
-    closingFormAfterChange();
-  }
-};
-
 const showFormAfterChange = () => {
   textDescription.textContent = '';
   showForm.classList.remove('hidden');
@@ -68,13 +61,31 @@ const unblockSubmitButton = () => {
 const changeOfSize = (scaleButton) => {
   if(scaleButton && sizeWindow > 0.25 ){
     sizeWindow = sizeWindow - 0.25;
-    scaleControlValue.value = sizeWindow * 100 + '%';
+    scaleControlValue.value = (sizeWindow * 100) + '%';
     imgPreview.style.transform = `scale(${sizeWindow})`;
   }
-  if (!scaleButton && size < 1){
+  if (!scaleButton && sizeWindow < 1){
     sizeWindow = sizeWindow + 0.25;
-    scaleControlValue.value = sizeWindow * 100 + '%';
+    scaleControlValue.value = (sizeWindow * 100) + '%';
     imgPreview.style.transform = `scale(${sizeWindow})`;
+  }
+};
+
+const onPopupEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closingFormAfterChange();
+  }
+};
+
+const hideWindowMessage = (event) => {
+  templateMessage.remove();
+  document.removeEventListener('keydown', escOnMessage);
+  document.removeEventListener('click', clickOnMessage);
+  if (event === 'success__button') {
+    successButton.removeEventListener('click', clickButtonOnMessage);
+  } else {
+    errorButton.removeEventListener('click', clickButtonOnMessage);
   }
 };
 
@@ -95,13 +106,7 @@ const clickButtonOnMessage = (evt) => {
     hideWindowMessage(evt.target.className);
   }
 };
-const hideWindowMessage = (event) => {
-  templateMessage.remove();
-  document.removeEventListener('keydown', escOnMessage);
-  document.removeEventListener('click', clickOnMessage);
-  (event === 'success__button') ? successButton.removeEventListener('click', clickButtonOnMessage) :
-    errorButton.removeEventListener('click', clickButtonOnMessage);
-};
+
 
 
 const showAlertMessage = (message, viewMessage) => {
@@ -109,8 +114,11 @@ const showAlertMessage = (message, viewMessage) => {
   document.querySelector('body').append(templateMessage);
   document.addEventListener('keydown', escOnMessage);
   document.addEventListener('click', clickOnMessage);
-  (viewMessage === 'success__button') ? successButton.addEventListener('click', clickButtonOnMessage) :
-    errorButton.addEventListener('click', clickButtonOnMessage);
+  if (event === 'success__button') {
+    successButton.removeEventListener('click', clickButtonOnMessage);
+  } else {
+    errorButton.removeEventListener('click', clickButtonOnMessage);
+  }
 };
 
 
