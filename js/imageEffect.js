@@ -66,7 +66,9 @@ const EFFECTS = [
 let effectData = EFFECTS[0];
 
 //сбразываю эффект
-const noneEffectData = () => effectData = EFFECTS[0];
+const noneEffectData = () => {
+  effectData = EFFECTS[0];
+};
 
 //создаю слайдер
 noUiSlider.create(sliderElement, {
@@ -116,7 +118,6 @@ spanbutton.addEventListener('click', (evt) => {
     changeSlider();
   }
 });
-
 
 // обработчик слайдера
 sliderElement.noUiSlider.on('update', () => {
