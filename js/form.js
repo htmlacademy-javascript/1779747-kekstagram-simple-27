@@ -1,5 +1,7 @@
-import {clearListPictures, rendeListPictures} from './pictureTemplate.js';
 import {imgPreview, noneEffectData, replaceClass, changeSlider} from './imageEffect.js';
+import {isEnterKey, isEscapeKey, showAlert} from './util.js';
+import {sendData} from './serverData.js';
+
 
 const uploadFile = document.getElementById('upload-file');
 const showForm = document.querySelector('.img-upload__overlay');
@@ -8,13 +10,19 @@ const uploadForm = document.querySelector('.img-upload__form');
 const publicButton = document.getElementById('upload-submit');
 const textDescription = document.querySelector('.text__description');
 const scaleControlValue = document.querySelector('.scale__control--value');
+const successMessage = document.querySelector('#success').content.querySelector('.success');
+const errorMessage = document.querySelector('#error').content.querySelector('.error');
+const successButton = document.querySelector('#success').content.querySelector('.success__button');
+const errorButton = document.querySelector('#error').content.querySelector('.error__button');
+let templateMessage = undefined;
+let size = 1;
 
-
-
-let size =1;
-
-const isEscapeKey = (evt) => evt.key === 'Escape';
-const isEnterKey = (evt) => evt.key === 'Enter';
+const resetForm = () => {
+  scaleControlValue.value = '100%';
+  imgPreview.style.transform = 'scale(1)';
+  size = 1;
+  replaceClass('effects__preview--none');
+};
 
 const onPopupEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -28,21 +36,17 @@ const showFormAfterChange = () => {
   showForm.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   document.addEventListener('keydown', onPopupEscKeydown);
-  scaleControlValue.value = '100%';
-  imgPreview.style.transform = 'scale(1)';
-  size = 1;
-  replaceClass('effects__preview--none');
+  resetForm();
   noneEffectData();
   changeSlider();
 };
 
 const closingFormAfterChange = () => {
-  //clearListPictures ();
   showForm.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   document.removeEventListener('keydown', onPopupEscKeydown);
- // uploadForm.reset();
-  //imgPreview.style.transform = 'scale(1)';
+  uploadForm.reset();
+  resetForm();
 };
 
 const pristine = new Pristine(uploadForm, {
@@ -60,19 +64,6 @@ const unblockSubmitButton = () => {
   publicButton.disabled = false;
   publicButton.textContent = 'Отправить';
 };
-const sendPublicPhoto = () => {
-
-    const  isValid = pristine.validate();
-    if(isValid) {
-      blockSubmitButton();
-     // sendData()
-      closingFormAfterChange();
-      unblockSubmitButton();
-      return true;
-
-    } else
-     return false;
-};
 
 const changeOfSize = (scaleButton) => {
   if(scaleButton && size > 0.25 ){
@@ -86,6 +77,69 @@ const changeOfSize = (scaleButton) => {
     imgPreview.style.transform = `scale(${size})`;
   }
 };
-export {scaleControlValue, publicButton, uploadFile, canselButton, isEnterKey, isEscapeKey,
-  onPopupEscKeydown, showFormAfterChange, closingFormAfterChange, sendPublicPhoto, changeOfSize };
+
+const escOnMessage = (evt) => {
+  if (isEscapeKey(evt)) {
+    hideWindowMessage(evt.target.className);
+  }
+};
+const clickOnMessage = (evt) => {
+  if (evt.target.className !== 'success__inner' && evt.target.className !== 'success__title' &&
+    evt.target.className !== 'error__inner' && evt.target.className !== 'error__title') {
+    hideWindowMessage(evt.target.className);
+  }
+};
+
+const clickButtonOnMessage = (evt) => {
+  if (evt.target.className = 'success__button' ) {
+    console.log('курсор на кнопке');
+    console.log(evt.target.className);
+    hideWindowMessage(evt.target.className);
+  }
+};
+const hideWindowMessage = (event) => {
+  templateMessage.remove();
+  document.removeEventListener('keydown', escOnMessage);
+  document.removeEventListener('click', clickOnMessage);
+  (event === 'success__button') ? successButton.removeEventListener('click', clickButtonOnMessage) :
+    errorButton.removeEventListener('click', clickButtonOnMessage);
+};
+
+
+const showAlertMessage = (message, viewMessage) => {
+  templateMessage = message.cloneNode(true);
+  document.querySelector('body').append(templateMessage);
+  document.addEventListener('keydown', escOnMessage);
+  document.addEventListener('click', clickOnMessage);
+  (viewMessage === 'success__button') ? successButton.addEventListener('click', clickButtonOnMessage) :
+    errorButton.addEventListener('click', clickButtonOnMessage);
+};
+
+
+const setFormSubmit = (onSuccess) => {
+  uploadForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData(
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+          showAlertMessage(successMessage, 'success__button');
+        },
+        () => showAlert('Не удалось отправить форму. Попробуйте еще раз.'),
+        new FormData(evt.target),
+      );
+    } else {
+      showAlertMessage(errorMessage, 'error__button');
+      unblockSubmitButton();
+      showAlert('Не удалось отправить форму. Попробуйте еще раз.');
+    }
+
+  });
+};
+
+export {pristine, uploadForm, scaleControlValue, publicButton, uploadFile, canselButton, setFormSubmit, blockSubmitButton, unblockSubmitButton, isEnterKey, isEscapeKey,
+  onPopupEscKeydown, showFormAfterChange, closingFormAfterChange, changeOfSize };
 

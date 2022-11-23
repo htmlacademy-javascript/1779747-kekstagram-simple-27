@@ -1,33 +1,13 @@
-import {publicButton, uploadFile, canselButton,
-  showFormAfterChange, closingFormAfterChange, isEnterKey, isEscapeKey, sendPublicPhoto,
-  } from './form.js';
-import {rendeListPictures, clearListPictures} from './pictureTemplate.js';
+import {closingFormAfterChange, setFormSubmit} from './form.js';
+import {getData} from './serverData.js';
+import './uploadPhoto.js';
+import {rendeListPictures} from'./pictureTemplate.js';
 
 
-rendeListPictures();
-
-
-uploadFile.addEventListener('change', () => {
-  showFormAfterChange();
-
+//скачиваю данные о фотографиях
+getData((photos) => {
+  rendeListPictures(photos);
 });
 
-canselButton.addEventListener('click', () => {
-  closingFormAfterChange();
-});
-
-canselButton.addEventListener('keydown', (evt) => {
-  if (isEnterKey(evt) || isEscapeKey(evt)) {
-    closingFormAfterChange();
-  }
-});
-
-
-publicButton.addEventListener('click', (evt) => {
-  if (!sendPublicPhoto()){
-    evt.preventDefault();
-  }
-});
-
-
-
+//отправка фото на сервер
+setFormSubmit(closingFormAfterChange);
