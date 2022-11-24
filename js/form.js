@@ -1,13 +1,12 @@
-import {imgPreview, noneEffectData, replaceClass, changeSlider} from './imageEffect.js';
+import {imgPreview, resetEffectData, replaceClass, changeSlider} from './image_effect.js';
 import {isEnterKey, isEscapeKey, showAlert} from './util.js';
-import {sendData} from './serverData.js';
+import {sendData} from './server_data.js';
 
-
-const uploadFile = document.getElementById('upload-file');
+const uploadFile = document.querySelector('#upload-file');
 const showForm = document.querySelector('.img-upload__overlay');
-const canselButton = document.getElementById('upload-cancel');
+const canselButton = document.querySelector('#upload-cancel');
 const uploadForm = document.querySelector('.img-upload__form');
-const publicButton = document.getElementById('upload-submit');
+const publicButton = document.querySelector('#upload-submit');
 const textDescription = document.querySelector('.text__description');
 const scaleControlValue = document.querySelector('.scale__control--value');
 const successMessage = document.querySelector('#success').content.querySelector('.success');
@@ -37,7 +36,7 @@ const showFormAfterChange = () => {
   document.querySelector('body').classList.add('modal-open');
   document.addEventListener('keydown', onPopupEscKeydown);
   resetForm();
-  noneEffectData();
+  resetEffectData();
   changeSlider();
 };
 
@@ -68,51 +67,53 @@ const unblockSubmitButton = () => {
 const changeOfSize = (scaleButton) => {
   if(scaleButton && sizeWindow > 0.25 ){
     sizeWindow = sizeWindow - 0.25;
-    scaleControlValue.value = sizeWindow * 100 + '%';
+    scaleControlValue.value = `${sizeWindow * 100}%`;
     imgPreview.style.transform = `scale(${sizeWindow})`;
   }
-  if (!scaleButton && size < 1){
+  if (!scaleButton && sizeWindow < 1){
     sizeWindow = sizeWindow + 0.25;
-    scaleControlValue.value = sizeWindow * 100 + '%';
+    scaleControlValue.value = `${sizeWindow * 100}%`;
     imgPreview.style.transform = `scale(${sizeWindow})`;
   }
 };
 
-const escOnMessage = (evt) => {
+const hideWindowMessage = (event) => {
+  templateMessage.remove();
+  document.removeEventListener('keydown', onMessageEsc);
+  document.removeEventListener('click', onMessageClick);
+  const button = event.className === 'success__button' ? successButton : errorButton;
+  button.removeEventListener('click', clickButtonOnMessage);
+};
+
+const onMessageEsc = (evt) => {
   if (isEscapeKey(evt)) {
     hideWindowMessage(evt.target.className);
   }
 };
-const clickOnMessage = (evt) => {
+const onMessageClick = (evt) => {
   if (evt.target.className !== 'success__inner' && evt.target.className !== 'success__title' &&
     evt.target.className !== 'error__inner' && evt.target.className !== 'error__title') {
     hideWindowMessage(evt.target.className);
   }
 };
 
-const clickButtonOnMessage = (evt) => {
+const onMessageButton = (evt) => {
   if (evt.target.className === 'success__button' ) {
     hideWindowMessage(evt.target.className);
   }
 };
-const hideWindowMessage = (event) => {
-  templateMessage.remove();
-  document.removeEventListener('keydown', escOnMessage);
-  document.removeEventListener('click', clickOnMessage);
-  (event === 'success__button') ? successButton.removeEventListener('click', clickButtonOnMessage) :
-    errorButton.removeEventListener('click', clickButtonOnMessage);
-};
-
 
 const showAlertMessage = (message, viewMessage) => {
   templateMessage = message.cloneNode(true);
   document.querySelector('body').append(templateMessage);
-  document.addEventListener('keydown', escOnMessage);
-  document.addEventListener('click', clickOnMessage);
-  (viewMessage === 'success__button') ? successButton.addEventListener('click', clickButtonOnMessage) :
-    errorButton.addEventListener('click', clickButtonOnMessage);
+  document.addEventListener('keydown', onMessageEsc);
+  document.addEventListener('click', onMessageClick);
+  if (viewMessage === 'success__button') {
+    successButton.addEventListener('click', onMessageButton);
+  } else {
+    errorButton.addEventListener('click', onMessageButton);
+  }
 };
-
 
 const setFormSubmit = (onSuccess) => {
   uploadForm.addEventListener('submit', (evt) => {
