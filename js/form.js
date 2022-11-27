@@ -1,5 +1,5 @@
 import {imgPreview, resetEffectData, replaceClass, changeSlider} from './image_effect.js';
-import {isEnterKey, isEscapeKey, showAlert} from './util.js';
+import {isEnterKey, isEscapeKey} from './util.js';
 import {sendData} from './server_data.js';
 
 const uploadFile = document.querySelector('#upload-file');
@@ -23,16 +23,17 @@ const resetForm = () => {
   replaceClass('effects__preview--none');
 };
 
-const onPopupEscKeydown = (evt) => {
+function onPopupEscKeydown (evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closingFormAfterChange();
+    if (templateMessage === undefined){closingFormAfterChange();}
   }
-};
+}
 
 const showFormAfterChange = () => {
   textDescription.textContent = '';
   showForm.classList.remove('hidden');
+  showForm.scrollTop = 55;
   document.querySelector('body').classList.add('modal-open');
   document.addEventListener('keydown', onPopupEscKeydown);
   resetForm();
@@ -40,29 +41,19 @@ const showFormAfterChange = () => {
   changeSlider();
 };
 
-const closingFormAfterChange = () => {
+function closingFormAfterChange () {
   showForm.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   document.removeEventListener('keydown', onPopupEscKeydown);
   uploadForm.reset();
   resetForm();
-};
+}
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__text',
   errorTextParent: 'img-upload__text',
   errorTextClass: 'img-upload__text__error-text',
 });
-
-const blockSubmitButton = () => {
-  publicButton.disabled = true;
-  publicButton.textContent = 'Отправляю...';
-};
-
-const unblockSubmitButton = () => {
-  publicButton.disabled = false;
-  publicButton.textContent = 'Отправить';
-};
 
 const changeOfSize = (scaleButton) => {
   if(scaleButton && sizeWindow > 0.25 ){
@@ -77,15 +68,8 @@ const changeOfSize = (scaleButton) => {
   }
 };
 
-const hideWindowMessage = (event) => {
-  templateMessage.remove();
-  document.removeEventListener('keydown', onMessageEsc);
-  document.removeEventListener('click', onMessageClick);
-  const button = event.className === 'success__button' ? successButton : errorButton;
-  button.removeEventListener('click', clickButtonOnMessage);
-};
-
 const onMessageEsc = (evt) => {
+  evt.preventDefault();
   if (isEscapeKey(evt)) {
     hideWindowMessage(evt.target.className);
   }
@@ -98,21 +82,36 @@ const onMessageClick = (evt) => {
 };
 
 const onMessageButton = (evt) => {
-  if (evt.target.className === 'success__button' ) {
+  if (evt.target.className === 'success__button') {
     hideWindowMessage(evt.target.className);
   }
 };
 
+function hideWindowMessage (event){
+  templateMessage.remove();
+  templateMessage = undefined;
+  window.removeEventListener('keydown', onMessageEsc);
+  document.removeEventListener('click', onMessageClick);
+  const button = event.className === 'success__button' ? successButton : errorButton;
+  button.removeEventListener('click', onMessageButton);
+}
+
 const showAlertMessage = (message, viewMessage) => {
   templateMessage = message.cloneNode(true);
   document.querySelector('body').append(templateMessage);
-  document.addEventListener('keydown', onMessageEsc);
+  window.addEventListener('keydown', onMessageEsc);
   document.addEventListener('click', onMessageClick);
-  if (viewMessage === 'success__button') {
-    successButton.addEventListener('click', onMessageButton);
-  } else {
-    errorButton.addEventListener('click', onMessageButton);
-  }
+  const button = viewMessage === 'success__button' ? successButton : errorButton;
+  button.addEventListener('click', onMessageButton);
+};
+
+const unblockSubmitButton = () => {
+  publicButton.disabled = false;
+  publicButton.textContent = 'ОПУБЛИКОВАТЬ';
+};
+const blockSubmitButton = () => {
+  publicButton.disabled = true;
+  publicButton.textContent = 'Отправляю...';
 };
 
 const setFormSubmit = (onSuccess) => {
@@ -127,15 +126,13 @@ const setFormSubmit = (onSuccess) => {
           unblockSubmitButton();
           showAlertMessage(successMessage, 'success__button');
         },
-        () => showAlert('Не удалось отправить форму. Попробуйте еще раз.'),
+        () => {
+          showAlertMessage(errorMessage, 'error__button');
+          unblockSubmitButton();
+        },
         new FormData(evt.target),
       );
-    } else {
-      showAlertMessage(errorMessage, 'error__button');
-      unblockSubmitButton();
-      showAlert('Не удалось отправить форму. Попробуйте еще раз.');
     }
-
   });
 };
 

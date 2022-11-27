@@ -1,8 +1,8 @@
 import {showAlert} from './util.js';
 
 const SEND_URL_ADRESS = 'https://27.javascript.pages.academy/kekstagram-simple';
-const GET_URL_ADRESS = 'https://27.javascript.pages.academy/kekstagram-simple/data';
-//const GET_URL_ADRESS = `${SEND_URL_ADRESS}/data`;
+//const GET_URL_ADRESS = 'https://27.javascript.pages.academy/kekstagram-simple/data';
+const GET_URL_ADRESS = `${SEND_URL_ADRESS}/data`;
 //console.log(GET_URL_ADRESS);
 //функция отправки фото на сервер
 const sendData = (onSuccess, onFail, body) => {
