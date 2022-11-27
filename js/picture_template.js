@@ -3,12 +3,14 @@ const similarPictureFragment = document.createDocumentFragment();
 const similarPicturesList = document.querySelector('.pictures');
 
 const rendeListPictures = (photos) => {
-  photos.forEach(({comments, id, likes, url})=> {
+  let index = 0;
+  photos.forEach(({comments, description, likes, url})=> {
+    pictureTemplateSample.href = `#${++index}`;
     const miniaturePhoto = pictureTemplateSample.cloneNode(true);
     const imgMiniaturePhoto = miniaturePhoto.querySelector('.picture__img');
-    miniaturePhoto.querySelector('.picture__likes').textContent = comments;
-    imgMiniaturePhoto.id = id;
-    miniaturePhoto.querySelector('.picture__comments').textContent = likes;
+    miniaturePhoto.querySelector('.picture__likes').textContent = likes;
+    imgMiniaturePhoto.alt = description;
+    miniaturePhoto.querySelector('.picture__comments').textContent = comments;
     imgMiniaturePhoto.src = url;
     similarPictureFragment.appendChild(miniaturePhoto );
   });
