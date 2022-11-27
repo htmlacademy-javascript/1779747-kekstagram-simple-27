@@ -1,13 +1,12 @@
-import {imgPreview, noneEffectData, replaceClass, changeSlider} from './imageEffect.js';
-import {isEnterKey, isEscapeKey, showAlert} from './util.js';
-import {sendData} from './serverData.js';
+import {imgPreview, resetEffectData, replaceClass, changeSlider} from './image_effect.js';
+import {isEnterKey, isEscapeKey} from './util.js';
+import {sendData} from './server_data.js';
 
-
-const uploadFile = document.getElementById('upload-file');
+const uploadFile = document.querySelector('#upload-file');
 const showForm = document.querySelector('.img-upload__overlay');
-const canselButton = document.getElementById('upload-cancel');
+const canselButton = document.querySelector('#upload-cancel');
 const uploadForm = document.querySelector('.img-upload__form');
-const publicButton = document.getElementById('upload-submit');
+const publicButton = document.querySelector('#upload-submit');
 const textDescription = document.querySelector('.text__description');
 const scaleControlValue = document.querySelector('.scale__control--value');
 const successMessage = document.querySelector('#success').content.querySelector('.success');
@@ -15,39 +14,40 @@ const errorMessage = document.querySelector('#error').content.querySelector('.er
 const successButton = document.querySelector('#success').content.querySelector('.success__button');
 const errorButton = document.querySelector('#error').content.querySelector('.error__button');
 let templateMessage = undefined;
-let size = 1;
+let sizeWindow = 1;
 
 const resetForm = () => {
   scaleControlValue.value = '100%';
   imgPreview.style.transform = 'scale(1)';
-  size = 1;
+  sizeWindow = 1;
   replaceClass('effects__preview--none');
 };
 
-const onPopupEscKeydown = (evt) => {
+function onPopupEscKeydown (evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closingFormAfterChange();
+    if (templateMessage === undefined){closingFormAfterChange();}
   }
-};
+}
 
 const showFormAfterChange = () => {
   textDescription.textContent = '';
   showForm.classList.remove('hidden');
+  showForm.scrollTop = 55;
   document.querySelector('body').classList.add('modal-open');
   document.addEventListener('keydown', onPopupEscKeydown);
   resetForm();
-  noneEffectData();
+  resetEffectData();
   changeSlider();
 };
 
-const closingFormAfterChange = () => {
+function closingFormAfterChange () {
   showForm.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   document.removeEventListener('keydown', onPopupEscKeydown);
   uploadForm.reset();
   resetForm();
-};
+}
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__text',
@@ -55,66 +55,64 @@ const pristine = new Pristine(uploadForm, {
   errorTextClass: 'img-upload__text__error-text',
 });
 
-const blockSubmitButton = () => {
-  publicButton.disabled = true;
-  publicButton.textContent = 'Отправляю...';
-};
-
-const unblockSubmitButton = () => {
-  publicButton.disabled = false;
-  publicButton.textContent = 'Отправить';
-};
-
 const changeOfSize = (scaleButton) => {
-  if(scaleButton && size > 0.25 ){
-    size = size - 0.25;
-    scaleControlValue.value = size * 100 + '%';
-    imgPreview.style.transform = `scale(${size})`;
+  if(scaleButton && sizeWindow > 0.25 ){
+    sizeWindow = sizeWindow - 0.25;
+    scaleControlValue.value = `${sizeWindow * 100}%`;
+    imgPreview.style.transform = `scale(${sizeWindow})`;
   }
-  if (!scaleButton && size < 1){
-    size = size + 0.25;
-    scaleControlValue.value = size * 100 + '%';
-    imgPreview.style.transform = `scale(${size})`;
+  if (!scaleButton && sizeWindow < 1){
+    sizeWindow = sizeWindow + 0.25;
+    scaleControlValue.value = `${sizeWindow * 100}%`;
+    imgPreview.style.transform = `scale(${sizeWindow})`;
   }
 };
 
-const escOnMessage = (evt) => {
+const onMessageEsc = (evt) => {
+  evt.preventDefault();
   if (isEscapeKey(evt)) {
     hideWindowMessage(evt.target.className);
   }
 };
-const clickOnMessage = (evt) => {
+const onMessageClick = (evt) => {
   if (evt.target.className !== 'success__inner' && evt.target.className !== 'success__title' &&
     evt.target.className !== 'error__inner' && evt.target.className !== 'error__title') {
     hideWindowMessage(evt.target.className);
   }
 };
 
-const clickButtonOnMessage = (evt) => {
-  if (evt.target.className = 'success__button' ) {
-    console.log('курсор на кнопке');
-    console.log(evt.target.className);
+const onMessageButton = (evt) => {
+  if (evt.target.className === 'success__button') {
     hideWindowMessage(evt.target.className);
   }
 };
-const hideWindowMessage = (event) => {
-  templateMessage.remove();
-  document.removeEventListener('keydown', escOnMessage);
-  document.removeEventListener('click', clickOnMessage);
-  (event === 'success__button') ? successButton.removeEventListener('click', clickButtonOnMessage) :
-    errorButton.removeEventListener('click', clickButtonOnMessage);
-};
 
+function hideWindowMessage (event){
+  templateMessage.remove();
+  templateMessage = undefined;
+  window.removeEventListener('keydown', onMessageEsc);
+  document.removeEventListener('click', onMessageClick);
+  const button = event.className === 'success__button' ? successButton : errorButton;
+  button.removeEventListener('click', onMessageButton);
+}
 
 const showAlertMessage = (message, viewMessage) => {
   templateMessage = message.cloneNode(true);
   document.querySelector('body').append(templateMessage);
-  document.addEventListener('keydown', escOnMessage);
-  document.addEventListener('click', clickOnMessage);
-  (viewMessage === 'success__button') ? successButton.addEventListener('click', clickButtonOnMessage) :
-    errorButton.addEventListener('click', clickButtonOnMessage);
+  window.addEventListener('keydown', onMessageEsc);
+  document.addEventListener('click', onMessageClick);
+  const button = viewMessage === 'success__button' ? successButton : errorButton;
+  button.addEventListener('click', onMessageButton);
 };
 
+const unblockSubmitButton = () => {
+  publicButton.disabled = false;
+  publicButton.textContent = 'ОПУБЛИКОВАТЬ';
+};
+const blockSubmitButton = () => {
+  publicButton.disabled = true;
+  publicButton.textContent = 'Отправляю...';
+};
 
 const setFormSubmit = (onSuccess) => {
   uploadForm.addEventListener('submit', (evt) => {
@@ -128,15 +126,13 @@ const setFormSubmit = (onSuccess) => {
           unblockSubmitButton();
           showAlertMessage(successMessage, 'success__button');
         },
-        () => showAlert('Не удалось отправить форму. Попробуйте еще раз.'),
+        () => {
+          showAlertMessage(errorMessage, 'error__button');
+          unblockSubmitButton();
+        },
         new FormData(evt.target),
       );
-    } else {
-      showAlertMessage(errorMessage, 'error__button');
-      unblockSubmitButton();
-      showAlert('Не удалось отправить форму. Попробуйте еще раз.');
     }
-
   });
 };
 

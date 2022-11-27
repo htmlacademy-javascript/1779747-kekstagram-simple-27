@@ -1,18 +1,17 @@
-import {changeOfSize} from "./form.js";
+import {changeOfSize} from './form.js';
 
 const imgPreview = document.querySelector('.img-upload__preview');
 const spanbutton = document.querySelector('.effects__list');
-const sliderElement  = document.querySelector('.effect-level__slider');
+const sliderElement = document.querySelector('.effect-level__slider');
+const imgEffectLevel = document.querySelector('.img-upload__effect-level');
 
 // уменяю класс при клике на кнопку эффекта
-const replaceClass =  (newClass) => {
+const replaceClass = (newClass) => {
   imgPreview.classList.remove(imgPreview.classList[1]);
   imgPreview.classList.add(newClass);
 };
 
-
 // Записываем в объекты параметры эффектов
-
 const EFFECTS = [
   {
     name: 'none',
@@ -66,7 +65,7 @@ const EFFECTS = [
 let effectData = EFFECTS[0];
 
 //сбразываю эффект
-const noneEffectData = () => {
+const resetEffectData = () => {
   effectData = EFFECTS[0];
 };
 
@@ -87,10 +86,10 @@ noUiSlider.create(sliderElement, {
 const changeSlider = () => {
   if (effectData.name === 'none') {
     imgPreview.style.filter = '';
-    document.querySelector('.img-upload__effect-level').classList.add('hidden');
+    imgEffectLevel.classList.add('hidden');
   } else {
-    document.querySelector('.img-upload__effect-level').classList.remove('hidden');
-  };
+    imgEffectLevel.classList.remove('hidden');
+  }
 
   sliderElement.noUiSlider.updateOptions({
     range: {
@@ -102,18 +101,17 @@ const changeSlider = () => {
   });
 };
 
-
 //обработчик события кнопки уменьшения размера
 document.querySelector('.img-upload__scale').addEventListener('click', (evt) => {
-  (evt.target.textContent === 'Уменьшить') ? changeOfSize(true) : changeOfSize(false);
+  const isDecrease = evt.target.textContent === 'Уменьшить';
+  changeOfSize(isDecrease);
 });
-
 
 //обработчик события кнопки эффекта
 spanbutton.addEventListener('click', (evt) => {
 // добавляю класс эффекта фотографии из пред. просмотра
-  if(evt.target.value!==undefined) {
-    effectData = EFFECTS.find(effect => effect.name === evt.target.value);
+  if(evt.target.value !== undefined) {
+    effectData = EFFECTS.find((effect) => effect.name === evt.target.value);
     replaceClass(`effects__preview--${evt.target.value}`);
     changeSlider();
   }
@@ -125,5 +123,4 @@ sliderElement.noUiSlider.on('update', () => {
   imgPreview.style.filter = `${effectData.style}(${sliderElement.noUiSlider.get()}${effectData.unit})`;
 });
 
-
-export {imgPreview, noneEffectData, sliderElement, replaceClass, changeSlider};
+export {imgPreview, sliderElement, resetEffectData, replaceClass, changeSlider};

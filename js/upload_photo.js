@@ -1,12 +1,10 @@
 import {canselButton, closingFormAfterChange, uploadFile, isEnterKey, isEscapeKey, showFormAfterChange} from './form.js';
 
-
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 const uploadPhoto = document.querySelector('.img-upload__start input[type=file]');
 const inputUploadPhoto = document.querySelector('.img-upload__preview').getElementsByTagName('img')[0];
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
-
-const  uploadPhotoWindow = () => {
+const uploadPhotoWindow = () => {
   const file = uploadPhoto.files[0];
   const fileName = file.name.toLowerCase();
   const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
@@ -15,17 +13,16 @@ const  uploadPhotoWindow = () => {
   }
 };
 
-
-uploadPhoto.addEventListener('change', (evt) => {
+uploadPhoto.addEventListener('change', () => {
   uploadPhotoWindow();
 });
 
-uploadFile.addEventListener('change', (evt) => {
+uploadFile.addEventListener('change', () => {
   showFormAfterChange();
 });
 
 
-canselButton.addEventListener('click', (evt) => {
+canselButton.addEventListener('click', () => {
   closingFormAfterChange();
 });
 
@@ -35,6 +32,4 @@ canselButton.addEventListener('keydown', (evt) => {
   }
 });
 
-
-
-export {uploadPhoto, uploadPhotoWindow}
+export {uploadPhoto, uploadPhotoWindow};
